@@ -769,7 +769,31 @@ uint32_t find_nus_c_instance(uint16_t conn_index, ble_nus_c_t ** pp_ble_nus_c)
 
     return err_code;
 }
+uint32_t get_nus_instance(ble_nus_t ** pp_ble_nus)
+{
+    uint32_t err_code;
 
+    *pp_ble_nus = &m_nus;
+    err_code = NRF_SUCCESS;
+
+    return err_code;  
+}
+
+uint32_t ble_master_encoded_string_send(uint16_t conn_handle, uint8_t * p_string, uint16_t length)
+{
+	 ble_nus_c_t * p_ble_nus_c;
+    find_nus_c_instance(conn_handle, &p_ble_nus_c);
+    return ble_nus_c_string_send(p_ble_nus_c, p_string, length);
+
+}
+
+uint32_t ble_slave_encoded_string_send(uint16_t conn_handle, uint8_t * p_string, uint16_t  p_length)
+{
+	ble_nus_t * p_ble_nus;
+    get_nus_instance (&p_ble_nus);
+    NRF_LOG_DEBUG("send %s length =%d",p_string,p_length);
+    return ble_nus_string_send(conn_handle, p_ble_nus, p_string, &p_length);
+}
 /**@brief Function for finding a matched instance from m_ble_gatt */
 uint32_t get_gatt_instance(nrf_ble_gatt_t ** pp_ble_gatt)
 {
@@ -1010,15 +1034,6 @@ static void services_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
-uint32_t get_nus_instance(ble_nus_t ** pp_ble_nus)
-{
-    uint32_t err_code;
-
-    *pp_ble_nus = &m_nus;
-    err_code = NRF_SUCCESS;
-
-    return err_code;  
-}
 
 uint32_t adv_start()
 {
